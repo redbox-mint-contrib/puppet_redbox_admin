@@ -1,0 +1,9 @@
+{
+  "name": "qcif-puppet_redbox_admin",
+  "version": "0.1.0",
+  "author": "qcif",
+  "summary": "Redbox admin module deployment.",
+  "license": "GNU 2",
+  "source": ""
+}
+
