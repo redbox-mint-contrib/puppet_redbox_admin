@@ -25,6 +25,6 @@ Puppet redbox admin deploys nodejs, npm (including sails and forever) and redbox
 puppet apply -e "class {'puppet_redbox_admin':}"
 
 * To start/stop forever:
-cd /opt/redbox/redbox-admin && forever <start|stop|restart> app.js --prod
+cd /opt/redbox-admin && forever <start|stop|restart> app.js --prod
 
 
