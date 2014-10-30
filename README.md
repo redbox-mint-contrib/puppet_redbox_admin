@@ -16,7 +16,6 @@ Puppet redbox admin deploys nodejs, npm (including sails and forever) and redbox
 
 ### What puppet_redbox_admin affects
 
-* The forever/sails commands are controlled from rpm deployment.
 * puppet_redbox: the proxy needs to be added to puppet_redbox hiera config
 
 ## Usage
@@ -24,7 +23,5 @@ Puppet redbox admin deploys nodejs, npm (including sails and forever) and redbox
 * For installing redbox_admin :
 puppet apply -e "class {'puppet_redbox_admin':}"
 
-* To start/stop forever:
-cd /opt/redbox-admin && forever <start|stop|restart> app.js --prod
-
-
+* To start the application:
+service redbox-admin start
