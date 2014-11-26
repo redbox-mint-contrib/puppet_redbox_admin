@@ -62,5 +62,6 @@ class puppet_redbox_admin (
   package { 'nodejs': ensure => $nodejs[version], } ~>
   package { 'npm': ensure => $npm[version], } ~>
   puppet_common::add_yum_repo { $yum_repos: exec_path => $exec_path } ~>
+  class { 'puppet_redbox_admin::logstash_elasticsearch':} ~>
   package { 'redbox-admin': install_options => ['-v'] }
 }
