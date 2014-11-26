@@ -91,6 +91,8 @@ class puppet_redbox_admin::logstash_elasticsearch (
   file {"logstash - since db": 
     ensure => directory,
     path => "/opt/logstash/since"
+    owner => "logstash",
+    group => "logstash"
   } ->
   service { 'logstash - es':
     name => "elasticsearch",
