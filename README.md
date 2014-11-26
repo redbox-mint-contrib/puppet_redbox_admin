@@ -16,12 +16,16 @@ This manifest will also install elasticsearch and logstash which are core compon
 
 ## Requirements
 
-* Installation of this module at your OS's puppet module directory (e.g. CentOS: /usr/share/puppet/modues/). Consult the puppet documentation specific to your OS.
+* Installation of this module at your OS's shared puppet module directory (e.g. CentOS: /usr/share/puppet/modules/). Consult the puppet documentation specific to your OS.
+
+* Installation of [Puppet Common](https://github.com/redbox-mint-contrib/puppet_common) module at your OS's shared puppet module directory.
 
 * Installation of the following puppet modules:
 
 `puppet module install elasticsearch-elasticsearch --version 0.4.0`
+
 `puppet module install elasticsearch-logstash --version 0.5.1` 
+
 `puppet module install maestrodev-wget --version 1.5.6`
 
 ## Installing
@@ -30,9 +34,9 @@ This manifest will also install elasticsearch and logstash which are core compon
 
 ## Post-installation
 
-### Starting the service
+### Controlling the service
 
-`service redbox-admin start`
+`service redbox-admin [start|stop|restart|status]`
 
 ### Making the Admin available to the world
 
