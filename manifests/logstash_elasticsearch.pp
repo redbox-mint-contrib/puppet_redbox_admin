@@ -88,6 +88,10 @@ class puppet_redbox_admin::logstash_elasticsearch (
     timeout     => 0,
     verbose     => false,
   } ->
+  file {"logstash - since db": 
+    ensure => directory,
+    path => "/opt/logstash/since"
+  } ->
   service { 'logstash - es':
     name => "elasticsearch",
     ensure => "running"
