@@ -23,8 +23,8 @@
 include wget
 
 class puppet_redbox_admin::logstash_elasticsearch (
-  clusterid = 'es-cluster-main',
-  nodeid = 'es-node-main',
+  $clusterid = 'es-cluster-main',
+  $nodeid = 'es-node-main',
   $elasticsearch_config = hiera_hash(elasticsearch, {
     version => '1.1.1-1',
   }),
