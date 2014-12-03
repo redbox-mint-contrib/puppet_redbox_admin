@@ -23,8 +23,10 @@
 include wget
 
 class puppet_redbox_admin::logstash_elasticsearch (
+  clusterid = 'es-cluster-main',
+  nodeid = 'es-node-main',
   $elasticsearch_config = hiera_hash(elasticsearch, {
-    version => '1.1.1-1'
+    version => '1.1.1-1',
   }),
   $logstash_config = hiera_hash(logstash, {
     version  => '1.4.2-1_2c0f5a1',
@@ -34,6 +36,8 @@ class puppet_redbox_admin::logstash_elasticsearch (
   class { 'elasticsearch':
     version => $elasticsearch_config[version],
     config => {
+      'cluster.name' => $clusterid,
+      'node.name' => $nodeid,
       'discovery'=> {
         'zen'=> {
           'ping' => {
@@ -43,7 +47,27 @@ class puppet_redbox_admin::logstash_elasticsearch (
           }
         }
       }
-    }
+    },
+    datadir=> '/opt/elasticsearch/data'
+  } ->
+  file {"elasticsearch - datadir": 
+    ensure => directory,
+    path => "/opt/elasticsearch/",
+    owner => "elasticsearch",
+    group => "elasticsearch",
+    recurse => true
+  } ->
+  file {"elasticsearch - main dir": 
+    ensure => directory,
+    path => "/opt/elasticsearch/data",
+    owner => "elasticsearch",
+    group => "elasticsearch",
+    recurse => true
+  } ->
+  file {"elasticsearch - /var/lib/elasticsearch": 
+    ensure => link,
+    path => "/var/lib/elasticsearch",
+    target => "/opt/elasticsearch/data"
   } ->
   elasticsearch::instance {'main':
   } ->
