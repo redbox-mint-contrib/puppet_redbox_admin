@@ -51,7 +51,10 @@ class puppet_redbox_admin (
       gpgcheck => 0,
       enabled  => 1
     }
-    ]),) {
+    ]),
+  $es_clusterid = 'es-cluster-main',
+  $es_nodeid = 'es-node-main',
+  ) {
   Package {
     allow_virtual => false, }
   class { 'puppet_redbox_admin::repo':
@@ -62,6 +65,6 @@ class puppet_redbox_admin (
   package { 'nodejs': ensure => $nodejs[version], } ~>
   package { 'npm': ensure => $npm[version], } ~>
   puppet_common::add_yum_repo { $yum_repos: exec_path => $exec_path } ~>
-  class { 'puppet_redbox_admin::logstash_elasticsearch':} ~>
+  class { 'puppet_redbox_admin::logstash_elasticsearch': clusterid=>$es_clusterid, nodeid=>$es_nodeid} ~>
   package { 'redbox-admin': install_options => ['-v'] }
 }

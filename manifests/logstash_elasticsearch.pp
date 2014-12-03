@@ -63,17 +63,32 @@ class puppet_redbox_admin::logstash_elasticsearch (
     owner => "elasticsearch",
     group => "elasticsearch",
     recurse => true
+  } -> file {"elasticsearch - main elasticsesarch dir": 
+    ensure => directory,
+    path => "/opt/elasticsearch/data/elasticsearch",
+    owner => "elasticsearch",
+    group => "elasticsearch",
+    recurse => true
   } ->
-  file {"elasticsearch - /var/lib/elasticsearch": 
+  file {"elasticsearch - /var/lib/elasticsearch/elasticsearch": 
     ensure => link,
-    path => "/var/lib/elasticsearch",
-    target => "/opt/elasticsearch/data"
+    path => "/var/lib/elasticsearch/elasticsearch",
+    target => "/opt/elasticsearch/data/elasticsearch"
   } ->
   elasticsearch::instance {'main':
   } ->
   class { 'logstash':
     version => $logstash_config[version]
-  } -> 
+  } ->
+  exec { "Logstash - stopping":
+    command => "/sbin/service logstash stop"
+  } ->
+  exec { "Elasticsearch - stopping":
+    command => "/sbin/service elasticsearch stop"
+  } ->
+  exec { "Elasticsearch - replace config file with generated one":
+    command => "/bin/cp /etc/elasticsearch/main/elasticsearch.yml /etc/elasticsearch/ && /bin/cp /etc/elasticsearch/main/logging.yml /etc/elasticsearch/"
+  } ->
   file { "logstash - /opt/redbox/home":
     path => "/opt/redbox/home",
     ensure => directory,
@@ -99,9 +114,6 @@ class puppet_redbox_admin::logstash_elasticsearch (
     ensure => directory,
     mode => "u+rwx,g+rwx,o+rx"
   } ->
-  exec { "Logstash - stopping":
-    command => "/sbin/service logstash stop"
-  } ->
   file { "logstash - /etc/logstash/conf.d/logstash.conf": 
     path => '/etc/logstash/conf.d/logstash.conf',
     ensure => absent
@@ -121,6 +133,9 @@ class puppet_redbox_admin::logstash_elasticsearch (
   service { 'logstash - es':
     name => "elasticsearch",
     ensure => "running"
+  } ->
+  exec { "Elasticsearch - starting":
+    command => "/sbin/service elasticsearch start"
   } ->
   exec { "Logstash - starting":
     command => "/sbin/service logstash start"
