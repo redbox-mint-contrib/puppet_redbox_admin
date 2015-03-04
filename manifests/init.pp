@@ -28,7 +28,7 @@ class puppet_redbox_admin (
   }
   ),
   $nodejs    = hiera_hash(nodejs, {
-    version => '0.10.32-1.el6',
+    version => '0.10.33-1.el6',
   }
   ),
   $exec_path = hiera_array(exec_path, [
