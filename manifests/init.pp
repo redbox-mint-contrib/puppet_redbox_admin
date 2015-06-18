@@ -23,48 +23,68 @@
 #   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
 class puppet_redbox_admin (
-  $npm       = hiera_hash(npm, {
+  $npm          = hiera_hash(npm, {
     version => '1.3.6-5.el6',
   }
   ),
-  $nodejs    = hiera_hash(nodejs, {
-    version => '0.10.33-1.el6',
+  $nodejs       = hiera_hash(nodejs, {
+    version => '0.10.36-1.el6',
   }
   ),
-  $exec_path = hiera_array(exec_path, [
+  $exec_path    = hiera_array(exec_path, [
     '/usr/local/bin',
     '/opt/local/bin',
     '/usr/bin',
     '/usr/sbin',
     '/bin',
-    '/sbin',
-    '/usr/local/rvm/gems/ruby-1.9.3-p547/bin']),
-  $epel_repo = hiera_hash(epel_repo, {
+    '/sbin']),
+  $epel_repo    = hiera_hash(epel_repo, {
     name    => "epel-release",
     version => "6-8",
   }
   ),
-  $yum_repos = hiera_array(yum_repos, [{
-      name     => 'redbox',
-      descr    => 'Redbox_repo',
+  $yum_repos    = hiera_array(yum_repos, [{
+      name     => 'redbox_snapshots',
+      descr    => 'Redbox_snapshot_repo',
       baseurl  => 'http://dev.redboxresearchdata.com.au/yum/snapshots',
       gpgcheck => 0,
+      priority => 20,
       enabled  => 1
     }
     ]),
   $es_clusterid = 'es-cluster-main',
-  $es_nodeid = 'es-node-main',
-  ) {
+  $es_nodeid    = 'es-node-main',) {
   Package {
-    allow_virtual => false, }
+    allow_virtual => true, }
+
   class { 'puppet_redbox_admin::repo':
     exec_path    => $exec_path,
     repo_name    => $epel_repo[name],
     repo_version => $epel_repo[version],
-  } ->
-  package { 'nodejs': ensure => $nodejs[version], } ~>
-  package { 'npm': ensure => $npm[version], } ~>
+  }
+  ensure_packages('nodejs', {
+    name     => 'nodejs',
+    ensure   => $nodejs[version],
+    provider => yum,
+    require  => [
+      Class['puppet_redbox_admin::repo'],
+      Package['npm']],
+  }
+  )
+  ensure_packages('npm', {
+    ensure => $npm[version],
+    notify => Puppet_common::Add_yum_repo[$yum_repos]
+  }
+  )
   puppet_common::add_yum_repo { $yum_repos: exec_path => $exec_path } ~>
-  class { 'puppet_redbox_admin::logstash_elasticsearch': clusterid=>$es_clusterid, nodeid=>$es_nodeid} ~>
-  package { 'redbox-admin': install_options => ['-v'] }
+  class { 'puppet_redbox_admin::logstash_elasticsearch':
+    clusterid => $es_clusterid,
+    nodeid    => $es_nodeid,
+    notify    => Package['redbox-admin'],
+  }
+
+  ensure_packages('redbox-admin', {
+    install_options => ['-v']
+  }
+  )
 }
