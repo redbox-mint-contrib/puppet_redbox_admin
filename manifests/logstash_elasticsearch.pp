@@ -23,99 +23,92 @@
 include wget
 
 class puppet_redbox_admin::logstash_elasticsearch (
-  $clusterid = 'es-cluster-main',
-  $nodeid = 'es-node-main',
+  $clusterid            = 'es-cluster-main',
+  $nodeid               = 'es-node-main',
   $elasticsearch_config = hiera_hash(elasticsearch, {
     version => '1.1.1-1',
-  }),
-  $logstash_config = hiera_hash(logstash, {
-    version  => '1.4.2-1_2c0f5a1',
-  })
-  )
-  {
+  }
+  ),
+  $logstash_config      = hiera_hash(logstash, {
+    version => '1.4.2-1_2c0f5a1',
+  }
+  )) {
   class { 'elasticsearch':
     version => $elasticsearch_config[version],
-    config => {
+    config  => {
       'cluster.name' => $clusterid,
-      'node.name' => $nodeid,
-      'discovery'=> {
-        'zen'=> {
-          'ping' => {
-            'multicast' => {
-              'enabled' => 'false'
+      'node.name'    => $nodeid,
+      'discovery'    => {
+        'zen'          => {
+          'ping'         => {
+            'multicast'    => {
+              'enabled'      => 'false'
             }
           }
         }
       }
-    },
-    datadir=> '/opt/elasticsearch/data'
+    }
+    ,
+    datadir => '/opt/elasticsearch/data'
   } ->
-  file {"elasticsearch - datadir": 
-    ensure => directory,
-    path => "/opt/elasticsearch/",
-    owner => "elasticsearch",
-    group => "elasticsearch",
+  file { "elasticsearch - datadir":
+    ensure  => directory,
+    path    => "/opt/elasticsearch/",
+    owner   => "elasticsearch",
+    group   => "elasticsearch",
     recurse => true
   } ->
-  file {"elasticsearch - main dir": 
-    ensure => directory,
-    path => "/opt/elasticsearch/data",
-    owner => "elasticsearch",
-    group => "elasticsearch",
+  file { "elasticsearch - main dir":
+    ensure  => directory,
+    path    => "/opt/elasticsearch/data",
+    owner   => "elasticsearch",
+    group   => "elasticsearch",
     recurse => true
-  } -> file {"elasticsearch - main elasticsesarch dir": 
-    ensure => directory,
-    path => "/opt/elasticsearch/data/elasticsearch",
-    owner => "elasticsearch",
-    group => "elasticsearch",
+  } -> file { "elasticsearch - main elasticsesarch dir":
+    ensure  => directory,
+    path    => "/opt/elasticsearch/data/elasticsearch",
+    owner   => "elasticsearch",
+    group   => "elasticsearch",
     recurse => true
   } ->
-  file {"elasticsearch - /var/lib/elasticsearch/elasticsearch": 
+  file { "elasticsearch - /var/lib/elasticsearch/elasticsearch":
     ensure => link,
-    path => "/var/lib/elasticsearch/elasticsearch",
+    path   => "/var/lib/elasticsearch/elasticsearch",
     target => "/opt/elasticsearch/data/elasticsearch"
   } ->
-  elasticsearch::instance {'main':
-  } ->
-  class { 'logstash':
-    version => $logstash_config[version]
-  } ->
-  exec { "Logstash - stopping":
-    command => "/sbin/service logstash stop"
-  } ->
-  exec { "Elasticsearch - stopping":
-    command => "/sbin/service elasticsearch stop"
-  } ->
-  exec { "Elasticsearch - replace config file with generated one":
-    command => "/bin/cp /etc/elasticsearch/main/elasticsearch.yml /etc/elasticsearch/ && /bin/cp /etc/elasticsearch/main/logging.yml /etc/elasticsearch/"
+  elasticsearch::instance { 'main': } ->
+  class { 'logstash': version => $logstash_config[version] } ->
+  exec { "Logstash - stopping": command => "/sbin/service logstash stop" } ->
+  exec { "Elasticsearch - stopping": command => "/sbin/service elasticsearch stop" } ->
+  exec { "Elasticsearch - replace config file with generated one": command => "/bin/cp /etc/elasticsearch/main/elasticsearch.yml /etc/elasticsearch/ && /bin/cp /etc/elasticsearch/main/logging.yml /etc/elasticsearch/" 
   } ->
   file { "logstash - /opt/redbox/home":
-    path => "/opt/redbox/home",
+    path   => "/opt/redbox/home",
     ensure => directory,
-    mode => "u+rwx,g+rwx,o+rx"
+    mode   => "u+rwx,g+rwx,o+rx"
   } ->
   file { "logstash - /opt/redbox/home/logs":
-    path => "/opt/redbox/home/logs",
+    path   => "/opt/redbox/home/logs",
     ensure => directory,
-    mode => "u+rwx,g+rwx,o+rx"
+    mode   => "u+rwx,g+rwx,o+rx"
   } ->
   file { "logstash - /opt/mint/home":
-    path => "/opt/mint/home",
+    path   => "/opt/mint/home",
     ensure => directory,
-    mode => "u+rwx,g+rwx,o+rx"
-  } -> 
+    mode   => "u+rwx,g+rwx,o+rx"
+  } ->
   file { "logstash - /opt/mint/home/logs/":
-    path => "/opt/mint/home/logs",
+    path   => "/opt/mint/home/logs",
     ensure => directory,
-    mode => "u+rwx,g+rwx,o+rx"
+    mode   => "u+rwx,g+rwx,o+rx"
   } ->
   file { "logstash - /opt/harvester/.json-harvester-manager-production/logs/":
-    path => "/opt/harvester/.json-harvester-manager-production/logs",
+    path   => "/opt/harvester/.json-harvester-manager-production/logs",
     ensure => directory,
-    mode => "u+rwx,g+rwx,o+rx"
+    mode   => "u+rwx,g+rwx,o+rx"
   } ->
-  file { "logstash - /etc/logstash/conf.d/logstash.conf": 
-    path => '/etc/logstash/conf.d/logstash.conf',
+  file { "logstash - /etc/logstash/conf.d/logstash.conf":
+    path   => '/etc/logstash/conf.d/logstash.conf',
     ensure => absent
   } ->
   wget::fetch { "Download Logstash config":
@@ -124,20 +117,22 @@ class puppet_redbox_admin::logstash_elasticsearch (
     timeout     => 0,
     verbose     => false,
   } ->
-  file {"logstash - since db": 
+  file { "logstash - parent":
     ensure => directory,
-    path => "/opt/logstash/since",
-    owner => "logstash",
-    group => "logstash"
+    path   => "/opt/logstash",
+    owner  => "logstash",
+    group  => "logstash"
+  } ->
+  file { "logstash - since db":
+    ensure => directory,
+    path   => "/opt/logstash/since",
+    owner  => "logstash",
+    group  => "logstash"
   } ->
   service { 'logstash - es':
-    name => "elasticsearch",
+    name   => "elasticsearch",
     ensure => "running"
   } ->
-  exec { "Elasticsearch - starting":
-    command => "/sbin/service elasticsearch start"
-  } ->
-  exec { "Logstash - starting":
-    command => "/sbin/service logstash start"
-  }
+  exec { "Elasticsearch - starting": command => "/sbin/service elasticsearch start" } ->
+  exec { "Logstash - starting": command => "/sbin/service logstash start" }
 }
