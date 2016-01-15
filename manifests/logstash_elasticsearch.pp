@@ -102,6 +102,16 @@ class puppet_redbox_admin::logstash_elasticsearch (
     ensure => directory,
     mode   => "u+rwx,g+rwx,o+rx"
   } ->
+  file { "logstash - /opt/harvester/":
+    path   => "/opt/harvester",
+    ensure => directory,
+    mode   => "u+rwx,g+rwx,o+rx"
+  }
+  file { "logstash - /opt/harvester/.json-harvester-manager-production/":
+    path   => "/opt/harvester/.json-harvester-manager-production",
+    ensure => directory,
+    mode   => "u+rwx,g+rwx,o+rx"
+  } ->
   file { "logstash - /opt/harvester/.json-harvester-manager-production/logs/":
     path   => "/opt/harvester/.json-harvester-manager-production/logs",
     ensure => directory,
