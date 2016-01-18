@@ -49,7 +49,8 @@ class puppet_redbox_admin::logstash_elasticsearch (
       }
     }
     ,
-    datadir => '/opt/elasticsearch/data'
+    datadir => '/opt/elasticsearch/data',
+    require => Class['Puppet_common::Java'],
   } ->
   file { "elasticsearch - datadir":
     ensure  => directory,
