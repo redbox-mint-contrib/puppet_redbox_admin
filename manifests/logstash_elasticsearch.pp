@@ -33,6 +33,7 @@ class puppet_redbox_admin::logstash_elasticsearch (
     version => '1.4.2-1_2c0f5a1',
   }
   )) {
+  class { 'puppet_common::java': }
   class { 'elasticsearch':
     version => $elasticsearch_config[version],
     config  => {
