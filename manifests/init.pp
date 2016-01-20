@@ -23,27 +23,21 @@
 #   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
 class puppet_redbox_admin (
-  $npm          = hiera_hash(npm, {
+  $npm                  = hiera_hash(npm, {
     version => '1.3.6-5.el6',
   }
   ),
-  $nodejs       = hiera_hash(nodejs, {
+  $nodejs               = hiera_hash(nodejs, {
     version => '0.10.36-3.el6',
   }
   ),
-  $exec_path    = hiera_array(exec_path, [
-    '/usr/local/bin',
-    '/opt/local/bin',
-    '/usr/bin',
-    '/usr/sbin',
-    '/bin',
-    '/sbin']),
-  $epel_repo    = hiera_hash(epel_repo, {
+  $exec_path            = hiera_array(exec_path, ['/usr/local/bin', '/opt/local/bin', '/usr/bin', '/usr/sbin', '/bin', '/sbin']),
+  $epel_repo            = hiera_hash(epel_repo, {
     name    => "epel-release",
     version => "6-8",
   }
   ),
-  $yum_repos    = hiera_array(yum_repos, [{
+  $yum_repos            = hiera_array(yum_repos, [{
       name     => 'redbox_snapshots',
       descr    => 'Redbox_snapshot_repo',
       baseurl  => 'http://dev.redboxresearchdata.com.au/yum/snapshots',
@@ -52,8 +46,17 @@ class puppet_redbox_admin (
       enabled  => 1
     }
     ]),
-  $es_clusterid = 'es-cluster-main',
-  $es_nodeid    = 'es-node-main',) {
+  $es_clusterid_default = 'es-cluster-main',
+  $es_nodeid_default    = 'es-node-main') {
+    
+  if ($::fqdn) {
+    $es_clusterid = "es-cluster-${::fqdn}"
+    $es_nodeid = "es-node-${::fqdn}"
+  } else {
+    $es_clusterid = $es_clusterid_default
+    $es_nodeid = $es_nodeid_default
+  }
+
   Package {
     allow_virtual => true, }
 
@@ -66,9 +69,7 @@ class puppet_redbox_admin (
     name     => 'nodejs',
     ensure   => $nodejs[version],
     provider => yum,
-    require  => [
-      Class['puppet_redbox_admin::repo'],
-      Package['npm']],
+    require  => [Class['puppet_redbox_admin::repo'], Package['npm']],
   }
   )
   ensure_packages('npm', {
