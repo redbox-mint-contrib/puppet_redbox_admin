@@ -24,16 +24,16 @@
 #
 class puppet_redbox_admin (
   $npm                  = hiera_hash(npm, {
-    version => '1.3.6-5.el6',
+    version => "1.3.6-5.el${::operatingsystemmajrelease}",
   }
   ),
   $nodejs               = hiera_hash(nodejs, {
-    version => '0.10.36-3.el6',
+    version => "0.10.36-3.el${::operatingsystemmajrelease}",
   }
   ),
   $exec_path            = hiera_array(exec_path, ['/usr/local/bin', '/opt/local/bin', '/usr/bin', '/usr/sbin', '/bin', '/sbin']),
   $epel_repo            = hiera_hash(epel_repo, {
-    name    => "epel-release",
+    name => "epel-release",
   }
   ),
   $yum_repos            = hiera_array(yum_repos, [{
@@ -47,7 +47,6 @@ class puppet_redbox_admin (
     ]),
   $es_clusterid_default = 'es-cluster-main',
   $es_nodeid_default    = 'es-node-main') {
-    
   if ($::fqdn) {
     $es_clusterid = "es-cluster-${::fqdn}"
     $es_nodeid = "es-node-${::fqdn}"
@@ -60,8 +59,8 @@ class puppet_redbox_admin (
     allow_virtual => true, }
 
   class { 'puppet_redbox_admin::repo':
-    exec_path    => $exec_path,
-    repo_name    => $epel_repo[name],
+    exec_path => $exec_path,
+    repo_name => $epel_repo[name],
   }
   ensure_packages('nodejs', {
     name     => 'nodejs',
