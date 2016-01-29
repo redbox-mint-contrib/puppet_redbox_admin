@@ -143,8 +143,8 @@ class puppet_redbox_admin::logstash_elasticsearch (
   } ->
   service { 'logstash - es':
     name   => "elasticsearch",
-    ensure => "running"
+    ensure => "running",
+    enable => true,
   } ->
-  exec { "Elasticsearch - starting": command => "/sbin/service elasticsearch start" } ->
   exec { "Logstash - starting": command => "/sbin/service logstash start" }
 }
