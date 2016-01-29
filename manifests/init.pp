@@ -34,7 +34,6 @@ class puppet_redbox_admin (
   $exec_path            = hiera_array(exec_path, ['/usr/local/bin', '/opt/local/bin', '/usr/bin', '/usr/sbin', '/bin', '/sbin']),
   $epel_repo            = hiera_hash(epel_repo, {
     name    => "epel-release",
-    version => "6-8",
   }
   ),
   $yum_repos            = hiera_array(yum_repos, [{
@@ -63,7 +62,6 @@ class puppet_redbox_admin (
   class { 'puppet_redbox_admin::repo':
     exec_path    => $exec_path,
     repo_name    => $epel_repo[name],
-    repo_version => $epel_repo[version],
   }
   ensure_packages('nodejs', {
     name     => 'nodejs',
