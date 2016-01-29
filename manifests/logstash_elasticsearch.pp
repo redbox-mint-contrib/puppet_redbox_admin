@@ -33,7 +33,20 @@ class puppet_redbox_admin::logstash_elasticsearch (
     version => '1.4.2-1_2c0f5a1',
   }
   )) {
-  class { 'puppet_common::java': }
+  case $::operatingsystem {
+    'CentOS' : {
+      case $::operatingsystemmajrelease {
+        '7'     : { $elasticsearch_service_name = "elasticsearch-main" }
+        default : { $elasticsearch_service_name = "elasticsearch" }
+      }
+    }
+    default  : {
+      $elasticsearch_service_name = "elasticsearch"
+    }
+  }
+
+  class { 'puppet_common::java':
+  }
   class { 'elasticsearch':
     version => $elasticsearch_config[version],
     config  => {
@@ -141,10 +154,12 @@ class puppet_redbox_admin::logstash_elasticsearch (
     owner  => "logstash",
     group  => "logstash"
   } ->
+  exec { "Elasticsearch - starting": command => "/sbin/chkconfig ${elasticsearch_service_name} on", } ->
   service { 'logstash - es':
     name   => "elasticsearch",
     ensure => "running",
     enable => true,
   } ->
+  exec { "Logstash - chkconfig": command => "/sbin/chkconfig logstash on", } ->
   exec { "Logstash - starting": command => "/sbin/service logstash start" }
 }
