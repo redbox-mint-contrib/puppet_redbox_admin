@@ -99,37 +99,30 @@ class puppet_redbox_admin::logstash_elasticsearch (
   } ->
   file { "logstash - /opt/redbox/home":
     path   => "/opt/redbox/home",
-    ensure => directory,
     mode   => "u+rwx,g+rwx,o+rx"
   } ->
   file { "logstash - /opt/redbox/home/logs":
     path   => "/opt/redbox/home/logs",
-    ensure => directory,
     mode   => "u+rwx,g+rwx,o+rx"
   } ->
   file { "logstash - /opt/mint/home":
     path   => "/opt/mint/home",
-    ensure => directory,
     mode   => "u+rwx,g+rwx,o+rx"
   } ->
   file { "logstash - /opt/mint/home/logs/":
     path   => "/opt/mint/home/logs",
-    ensure => directory,
     mode   => "u+rwx,g+rwx,o+rx"
   } ->
   file { "logstash - /opt/harvester/":
     path   => "/opt/harvester",
-    ensure => directory,
     mode   => "u+rwx,g+rwx,o+rx"
   }
   file { "logstash - /opt/harvester/.json-harvester-manager-production/":
     path   => "/opt/harvester/.json-harvester-manager-production",
-    ensure => directory,
     mode   => "u+rwx,g+rwx,o+rx"
   } ->
   file { "logstash - /opt/harvester/.json-harvester-manager-production/logs/":
     path   => "/opt/harvester/.json-harvester-manager-production/logs",
-    ensure => directory,
     mode   => "u+rwx,g+rwx,o+rx"
   } ->
   file { "logstash - /etc/logstash/conf.d/logstash.conf":
