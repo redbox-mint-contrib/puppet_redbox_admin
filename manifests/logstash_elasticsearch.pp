@@ -36,7 +36,6 @@ class puppet_redbox_admin::logstash_elasticsearch (
   case $::operatingsystem {
     'CentOS' : {
       case $::operatingsystemmajrelease {
-        '7'     : { $elasticsearch_service_name = "elasticsearch-main" }
         default : { $elasticsearch_service_name = "elasticsearch" }
       }
     }
@@ -73,19 +72,6 @@ class puppet_redbox_admin::logstash_elasticsearch (
     group   => "elasticsearch",
     recurse => true
   } ->
-  file { "elasticsearch - main dir":
-    ensure  => directory,
-    path    => "/opt/elasticsearch/data",
-    owner   => "elasticsearch",
-    group   => "elasticsearch",
-    recurse => true
-  } -> file { "elasticsearch - main elasticsesarch dir":
-    ensure  => directory,
-    path    => "/opt/elasticsearch/data/elasticsearch",
-    owner   => "elasticsearch",
-    group   => "elasticsearch",
-    recurse => true
-  } ->
   file { "elasticsearch - /var/lib/elasticsearch/elasticsearch":
     ensure => link,
     path   => "/var/lib/elasticsearch/elasticsearch",
@@ -94,36 +80,37 @@ class puppet_redbox_admin::logstash_elasticsearch (
   elasticsearch::instance { 'main': } ->
   class { 'logstash': version => $logstash_config[version] } ->
   exec { "Logstash - stopping": command => "/sbin/service logstash stop" } ->
-  exec { "Elasticsearch - stopping": command => "/sbin/service elasticsearch stop" } ->
+  #  exec { "Elasticsearch - chkconfig": command => "/sbin/chkconfig ${elasticsearch_service_name} on", } ->
+  exec { "Elasticsearch - stopping": command => "/sbin/service ${elasticsearch_service_name} stop" } ->
   exec { "Elasticsearch - replace config file with generated one": command => "/bin/cp /etc/elasticsearch/main/elasticsearch.yml /etc/elasticsearch/ && /bin/cp /etc/elasticsearch/main/logging.yml /etc/elasticsearch/" 
   } ->
   file { "logstash - /opt/redbox/home":
-    path   => "/opt/redbox/home",
-    mode   => "u+rwx,g+rwx,o+rx"
+    path => "/opt/redbox/home",
+    mode => "u+rwx,g+rwx,o+rx"
   } ->
   file { "logstash - /opt/redbox/home/logs":
-    path   => "/opt/redbox/home/logs",
-    mode   => "u+rwx,g+rwx,o+rx"
+    path => "/opt/redbox/home/logs",
+    mode => "u+rwx,g+rwx,o+rx"
   } ->
   file { "logstash - /opt/mint/home":
-    path   => "/opt/mint/home",
-    mode   => "u+rwx,g+rwx,o+rx"
+    path => "/opt/mint/home",
+    mode => "u+rwx,g+rwx,o+rx"
   } ->
   file { "logstash - /opt/mint/home/logs/":
-    path   => "/opt/mint/home/logs",
-    mode   => "u+rwx,g+rwx,o+rx"
+    path => "/opt/mint/home/logs",
+    mode => "u+rwx,g+rwx,o+rx"
   } ->
   file { "logstash - /opt/harvester/":
-    path   => "/opt/harvester",
-    mode   => "u+rwx,g+rwx,o+rx"
+    path => "/opt/harvester",
+    mode => "u+rwx,g+rwx,o+rx"
   }
   file { "logstash - /opt/harvester/.json-harvester-manager-production/":
-    path   => "/opt/harvester/.json-harvester-manager-production",
-    mode   => "u+rwx,g+rwx,o+rx"
+    path => "/opt/harvester/.json-harvester-manager-production",
+    mode => "u+rwx,g+rwx,o+rx"
   } ->
   file { "logstash - /opt/harvester/.json-harvester-manager-production/logs/":
-    path   => "/opt/harvester/.json-harvester-manager-production/logs",
-    mode   => "u+rwx,g+rwx,o+rx"
+    path => "/opt/harvester/.json-harvester-manager-production/logs",
+    mode => "u+rwx,g+rwx,o+rx"
   } ->
   file { "logstash - /etc/logstash/conf.d/logstash.conf":
     path   => '/etc/logstash/conf.d/logstash.conf',
@@ -147,12 +134,7 @@ class puppet_redbox_admin::logstash_elasticsearch (
     owner  => "logstash",
     group  => "logstash"
   } ->
-  exec { "Elasticsearch - starting": command => "/sbin/chkconfig ${elasticsearch_service_name} on", } ->
-  service { 'logstash - es':
-    name   => "elasticsearch",
-    ensure => "running",
-    enable => true,
-  } ->
-  exec { "Logstash - chkconfig": command => "/sbin/chkconfig logstash on", } ->
-  exec { "Logstash - starting": command => "/sbin/service logstash start" }
+  exec { "/sbin/service ${elasticsearch_service_name} restart": } ->
+  exec { "/sbin/service logstash restart": }
+
 }

@@ -1,11 +1,30 @@
 {
-  "name": "qcif-puppet_redbox_admin",
-  "version": "0.1.0",
-  "author": "qcif",
-  "summary": "Redbox admin module deployment.",
-  "license": "GNU 2",
-  "source": "UNKNOWN",
-  "dependencies": [],
-  "project_page": "UNKNOWN"
+	"name": "qcif-puppet_redbox_admin",
+	"version": "0.1.0",
+	"author": "qcif",
+	"summary": "Redbox admin module deployment.",
+	"license": "GNU 2",
+	"source": "UNKNOWN",
+	"dependencies": [{
+			"name": "elasticsearch/elasticsearch",
+			"version_requirement": ">=0.4.0 <=0.10.2"
+		},{
+			"name": "elasticsearch/logstash",
+			"version_requirement": ">=0.5.1"
+		},{
+			"name": "maestrodev/wget",
+			"version_requirement": ">=1.7.1"
+		},{
+			"name": "ispavailability/file_concat",
+			"version_requirement": ">=0.3.0"
+		},{
+			"name": "ceritsc/yum",
+			"version_requirement": ">=0.9.6"
+		},{
+			"name": "richardc/datacat",
+			"version_requirement": ">=0.6.2"
+		}
+	],
+	"project_page": "UNKNOWN"
 }
 
