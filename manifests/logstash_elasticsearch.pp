@@ -80,7 +80,7 @@ class puppet_redbox_admin::logstash_elasticsearch (
   elasticsearch::instance { 'main': } ->
   class { 'logstash': version => $logstash_config[version] } ->
   exec { "Logstash - stopping": command => "/sbin/service logstash stop" } ->
-  #  exec { "Elasticsearch - chkconfig": command => "/sbin/chkconfig ${elasticsearch_service_name} on", } ->
+  exec { "Elasticsearch - chkconfig": command => "/sbin/chkconfig ${elasticsearch_service_name} on", } ->
   exec { "Elasticsearch - stopping": command => "/sbin/service ${elasticsearch_service_name} stop" } ->
   exec { "Elasticsearch - replace config file with generated one": command => "/bin/cp /etc/elasticsearch/main/elasticsearch.yml /etc/elasticsearch/ && /bin/cp /etc/elasticsearch/main/logging.yml /etc/elasticsearch/" 
   } ->
