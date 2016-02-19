@@ -36,7 +36,17 @@ class puppet_redbox_admin (
     name => "epel-release",
   }
   ),
-  $yum_repos            = hiera_array(yum_repos, [{
+  $yum_repos            = hiera_array(yum_repos, [
+    {
+      name     => 'redbox_releases',
+      descr    => 'Redbox_release_repo',
+      baseurl  => 'http://dev.redboxresearchdata.com.au/yum/releases',
+      gpgcheck => 0,
+      priority => 15,
+      enabled  => 1
+    }
+    ,
+    {
       name     => 'redbox_snapshots',
       descr    => 'Redbox_snapshot_repo',
       baseurl  => 'http://dev.redboxresearchdata.com.au/yum/snapshots',
@@ -71,14 +81,16 @@ class puppet_redbox_admin (
   )
   ensure_packages('npm', {
     ensure => $npm[version],
-    notify => Puppet_common::Add_yum_repo[$yum_repos]
   }
   )
-  puppet_common::add_yum_repo { $yum_repos: exec_path => $exec_path } ~>
+ 
+  user { ['logstash', 'elasticsearch']: } -> group { ['logstash', 'elasticsearch']: }
+
   class { 'puppet_redbox_admin::logstash_elasticsearch':
     clusterid => $es_clusterid,
     nodeid    => $es_nodeid,
     notify    => Package['redbox-admin'],
+    require   => [User['logstash'], User['elasticsearch'], Group['logstash'], Group['elasticsearch']],
   }
 
   ensure_packages('redbox-admin', {
